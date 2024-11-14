@@ -1,69 +1,39 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questionário de História do Brasil</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { width: 100%; max-width: 800px; margin: 0 auto; }
-        .question { margin-bottom: 20px; }
-        .question h3 { margin-bottom: 10px; }
-        .question label { display: block; margin: 5px 0; }
-        #result { margin-top: 20px; font-weight: bold; }
-    </style>
+    <title>Prova de História do Brasil</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Questionário de História do Brasil</h1>
+    <div id="questionnaire">
+        <h1>Prova de História do Brasil</h1>
+        
         <div id="header">
             <label for="studentName">Nome do Aluno:</label>
-            <input type="text" id="studentName" required><br>
-            <label for="school">Escola:</label>
-            <input type="text" id="school" required><br>
+            <input type="text" id="studentName" placeholder="Digite seu nome"><br>
+
+            <label for="schoolName">Escola:</label>
+            <input type="text" id="schoolName" placeholder="Nome da escola"><br>
+
             <label for="teacherName">Nome do Professor(a):</label>
-            <input type="text" id="teacherName" required><br>
+            <input type="text" id="teacherName" placeholder="Nome do professor"><br>
+
             <label for="date">Data:</label>
-            <input type="text" id="date" value="<%= current_date %>" readonly><br><br>
-            <span>Nota:</span> <span id="score">0</span>
+            <input type="text" id="date" value="" disabled><br>
+
+            <label for="score">Nota:</label>
+            <input type="text" id="score" placeholder="Nota será calculada" disabled>
         </div>
 
-        <form id="quizForm" onsubmit="return false;">
-            <div class="question" id="question1">
-                <h3>1. Quem foi o responsável pela chegada dos portugueses ao Brasil em 1500?</h3>
-                <label><input type="radio" name="q1" value="a"> a) Pedro Álvares Cabral</label>
-                <label><input type="radio" name="q1" value="b"> b) Vasco da Gama</label>
-                <label><input type="radio" name="q1" value="c"> c) Cristóvão Colombo</label>
-                <label><input type="radio" name="q1" value="d"> d) Américo Vespúcio</label>
-            </div>
-
-            <div class="question" id="question2" style="display:none;">
-                <h3>2. Em qual ano foi proclamada a independência do Brasil?</h3>
-                <label><input type="radio" name="q2" value="a"> a) 1808</label>
-                <label><input type="radio" name="q2" value="b"> b) 1822</label>
-                <label><input type="radio" name="q2" value="c"> c) 1889</label>
-                <label><input type="radio" name="q2" value="d"> d) 1891</label>
-            </div>
-
-            <div class="question" id="question3" style="display:none;">
-                <h3>3. Quem foi o primeiro imperador do Brasil?</h3>
-                <label><input type="radio" name="q3" value="a"> a) Dom Pedro I</label>
-                <label><input type="radio" name="q3" value="b"> b) Dom Pedro II</label>
-                <label><input type="radio" name="q3" value="c"> c) Marechal Deodoro</label>
-                <label><input type="radio" name="q3" value="d"> d) Getúlio Vargas</label>
-            </div>
-
-            <!-- Add remaining questions here in similar format -->
-
-            <button onclick="nextQuestion()">Próxima Pergunta</button>
-            <button onclick="showResults()">Finalizar</button>
-        </form>
-
-        <div id="result" style="display:none;">
-            <h2>Resultados:</h2>
-            <p>Nota Parcial: <span id="finalScore">0</span></p>
-            <button onclick="goBack()">Voltar</button>
+        <div id="questions">
+            <!-- Perguntas serão exibidas dinamicamente -->
         </div>
+
+        <button onclick="nextQuestion()">Próxima Pergunta</button>
+        <button onclick="previousQuestion()" disabled>Questão Anterior</button>
+        <button onclick="finalize()" disabled>Finalizar</button>
     </div>
 
     <script src="index.js"></script>
