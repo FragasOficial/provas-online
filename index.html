@@ -5,37 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prova de História do Brasil</title>
     <link rel="stylesheet" href="index.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <script defer src="index.js"></script>
 </head>
 <body>
-    <div id="questionnaire">
-        <h1>Prova de História do Brasil</h1>
-        
-        <div id="header">
-            <label for="studentName">Nome do Aluno:</label>
-            <input type="text" id="studentName" placeholder="Digite seu nome"><br>
-
-            <label for="schoolName">Escola:</label>
-            <input type="text" id="schoolName" placeholder="Nome da escola"><br>
-
-            <label for="teacherName">Nome do Professor(a):</label>
-            <input type="text" id="teacherName" placeholder="Nome do professor"><br>
-
-            <label for="date">Data:</label>
-            <input type="text" id="date" value="" disabled><br>
-
-            <label for="score">Nota:</label>
-            <input type="text" id="score" placeholder="Nota será calculada" disabled>
+    <div id="passwordModal">
+        <div id="passwordModalContent">
+            <h2>Digite a senha para iniciar a prova</h2>
+            <input type="password" id="passwordInput" placeholder="Senha" />
+            <button onclick="checkPassword()">Entrar</button>
+            <p id="errorMessage" style="color: red; display: none;">Senha incorreta. Tente novamente.</p>
         </div>
-
-        <div id="questions">
-            <!-- Perguntas serão exibidas dinamicamente -->
-        </div>
-
-        <button onclick="nextQuestion()">Próxima Pergunta</button>
-        <button onclick="previousQuestion()" disabled>Questão Anterior</button>
-        <button onclick="finalize()" disabled>Finalizar</button>
     </div>
 
-    <script src="index.js"></script>
+    <div class="container" id="examContainer" style="display: none;">
+        <header>
+            <h1>Prova de História do Brasil</h1>
+            <label>Nome do Aluno: <input type="text" id="studentName" required></label>
+            <label>Escola: <input type="text" id="schoolName" required></label>
+            <label>Data: <input type="text" id="date" readonly></label>
+            <label>Professor(a): <input type="text" id="teacherName" required></label>
+        </header>
+        <main>
+            <div id="questions"></div>
+            <div class="controls">
+                <button onclick="previousQuestion()">Voltar</button>
+                <button onclick="nextQuestion()">Próxima</button>
+                <button onclick="finalize()" disabled>Finalizar</button>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

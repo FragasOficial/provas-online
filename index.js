@@ -51,6 +51,21 @@ const questions = [
 let currentQuestionIndex = 0;
 const responses = {};
 
+function checkPassword() {
+    const passwordInput = document.getElementById("passwordInput").value;
+
+    if (passwordInput === "908070") {
+        document.getElementById("passwordModal").style.display = "none";
+        document.getElementById("examContainer").style.display = "block";
+        init();
+    } else {
+        const errorMessage = document.getElementById("errorMessage");
+        errorMessage.style.display = "block";
+        document.getElementById("passwordInput").value = "";
+        document.getElementById("passwordInput").focus();
+    }
+}
+
 function init() {
     document.getElementById("date").value = new Date().toLocaleDateString();
     loadQuestion();
@@ -75,47 +90,101 @@ function loadQuestion() {
             const label = document.createElement("label");
             const input = document.createElement("input");
             input.type = "radio";
-            input.name = "option";
+            input.name = `q${currentQuestionIndex}`;
             input.value = index;
-            input.checked = responses[currentQuestionIndex] === index;
-            input.onchange = () => saveResponse(index);
-
+            input.onclick = () => saveResponse(index);
             label.appendChild(input);
             label.appendChild(document.createTextNode(option));
             questionsDiv.appendChild(label);
-            questionsDiv.appendChild(document.createElement("br"));
         });
     }
 
-    document.querySelector("button[onclick='nextQuestion()']").disabled = false;
-    document.querySelector("button[onclick='previousQuestion()']").disabled = currentQuestionIndex === 0;
+    updateButtons();
 }
 
-function saveResponse(answer) {
-    responses[currentQuestionIndex] = answer;
+function saveResponse(value) {
+    responses[currentQuestionIndex] = value;
 }
 
 function nextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
-        currentQuestionIndex++;
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
         loadQuestion();
     }
-    document.querySelector("button[onclick='finalize()']").disabled = currentQuestionIndex !== questions.length - 1;
+    updateButtons();
 }
 
 function previousQuestion() {
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
+    currentQuestionIndex--;
+    if (currentQuestionIndex >= 0) {
         loadQuestion();
     }
+    updateButtons();
+}
+
+function updateButtons() {
+    const finalizeButton = document.querySelector(".controls button:last-child");
+    finalizeButton.disabled = !Object.keys(responses).length || Object.values(responses).some(response => response === undefined || response === "");
 }
 
 function finalize() {
-    const correctAnswers = questions.slice(0, 7).filter((q, i) => responses[i] === q.answer).length;
-    const totalScore = correctAnswers;
-    alert(`Pontuação: ${totalScore}/7. Respostas subjetivas serão corrigidas após a entrega.`);
-
-    // Implementação da lógica para gerar PDF não incluída aqui
+    const confirmation = confirm("Você tem certeza de que quer finalizar a prova?");
+    if (confirmation) {
+        const grade = calculateGrade();
+        alert(`Prova finalizada. Sua nota é: ${grade}`);
+        generatePDF(grade);
+    }
 }
 
-window.onload = init;
+function calculateGrade() {
+    let correctAnswers = 0;
+    questions.forEach((question, index) => {
+        if (question.type !== "subjective") {
+            const answerIndex = responses[index];
+            if (answerIndex === question.answer) {
+                correctAnswers++;
+            }
+        }
+    });
+    return (correctAnswers / questions.length) * 10; // Nota de 0 a 10
+}
+
+function generatePDF(grade) {
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF();
+    const margin = 10;
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const x = margin;
+    const y = margin;
+
+    doc.setFontSize(14);
+    doc.text(`Prova de História do Brasil`, x, y);
+    doc.setFontSize(12);
+    doc.text(`Nome do Aluno: ${document.getElementById("studentName").value}`, x, y + 10);
+    doc.text(`Escola: ${document.getElementById("schoolName").value}`, x, y + 20);
+    doc.text(`Data: ${document.getElementById("date").value}`, x, y + 30);
+    doc.text(`Professor(a): ${document.getElementById("teacherName").value}`, x, y + 40);
+    doc.text(`Nota: ${grade.toFixed(2)}`, x, y + 50);
+    
+    // Adicionar perguntas e respostas
+    let position = y + 60;
+    questions.forEach((question, index) => {
+        doc.setFontSize(12);
+        doc.text(`${index + 1}. ${question.text}`, x, position);
+        position += 10;
+        if (question.type !== "subjective") {
+            const answerIndex = responses[index];
+            const answer = question.options[answerIndex] || "Não respondida";
+            doc.text(`Resposta: ${answer}`, x, position);
+        } else {
+            const answer = responses[index] || "Não respondida";
+            doc.text(`Resposta: ${answer}`, x, position);
+        }
+        position += 20;
+    });
+
+    // Gerar o PDF e fazer o download
+    doc.save('prova_historia_brasil.pdf');
+}
